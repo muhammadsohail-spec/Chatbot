@@ -29,7 +29,6 @@ class TestSignUp:
         signup_page.enter_email(updated_ramdom)
         time.sleep(2)
         signup_page.enter_cellphone(cellphone)
-        signup_page.enter_password(password)
         signup_page.enter_confirmpassword(confirm_password)
         print("Newly User Password ===" + password)
         signup_page.click_submit()

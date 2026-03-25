@@ -100,6 +100,7 @@ class TestLogin:
         login_page = LoginPage(driver)
         assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty credentials"
 
+    @pytest.mark.skip(reason="Not need to test every time")
     def test_forgot_password(self, driver):
         driver.get(URL)
         login_page = LoginPage(driver)

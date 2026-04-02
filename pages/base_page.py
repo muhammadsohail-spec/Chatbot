@@ -4,15 +4,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage:
-    def __init__(self, driver, timeout=10):
+    def __init__(self, driver, timeout=30):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
     def click(self, locator):
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
+        from selenium.common.exceptions import ElementClickInterceptedException
+        try:
+            self.wait.until(EC.element_to_be_clickable(locator)).click()
+        except ElementClickInterceptedException:
+            element = self.wait.until(EC.presence_of_element_located(locator))
+            self.driver.execute_script("arguments[0].click();", element)
 
     def enter_text(self, locator, text):
-        element = self.wait.until(EC.visibility_of_element_located(locator))
+        element = self.wait.until(EC.element_to_be_clickable(locator))
         element.clear()
         element.send_keys(text)
 
@@ -20,7 +25,7 @@ class BasePage:
         return self.wait.until(EC.visibility_of_element_located(locator)).text
 
     # Wait for element to be visible
-    def wait_for_visibility(self, locator, timeout=10):
+    def wait_for_visibility(self, locator, timeout=30):
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )

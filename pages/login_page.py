@@ -22,6 +22,7 @@ class LoginPage(BasePage):
     RESET_BUTTON=(By.XPATH, "//button[normalize-space()='Reset Password']")
     ERROR_MESSAGE = (By.XPATH, "//*[@data-slot='alert-description']")
 
+
     def enter_email(self, email):
         try:
             self.wait_for_visibility(self.EMAIL_INPUT)

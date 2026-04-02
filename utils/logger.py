@@ -15,3 +15,10 @@ def get_logger():
     logger.addHandler(file_handler)
 
     return logger
+
+
+import json
+
+def load_guidelines():
+    with open("testdata/guidelines.json") as f:
+        return json.load(f)

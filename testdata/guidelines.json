@@ -1,0 +1,22 @@
+{
+  "confirmation": [
+    {
+      "name": "Chase Community Lending",
+      "expected_keywords": ["Chase", "Community", "Lending"]
+    },
+    {
+      "name": "Conforming Overlays",
+      "expected_keywords": ["Conforming", "Overlays"]
+    }
+  ],
+  "mom_qa": [
+    {
+      "name": "Conforming PnP",
+      "expected_keywords": ["PnP", "Conforming"]
+    },
+    {
+      "name": "Conforming US Bank Overlays",
+      "expected_keywords": ["US Bank", "Overlays"]
+    }
+  ]
+}

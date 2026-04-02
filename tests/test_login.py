@@ -8,6 +8,7 @@ import logging
 
 import logging
 from pages.base_page import BasePage
+
 from utils.helpers import generate_unique_email
 
 
@@ -18,7 +19,7 @@ from utils.helpers import generate_unique_email
 
 class TestLogin:
 
-
+    @pytest.mark.regression
     def test_login_valid_credentials(self,driver):
         driver.get(URL)
         login_page = LoginPage(driver)
@@ -100,7 +101,6 @@ class TestLogin:
         login_page = LoginPage(driver)
         assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty credentials"
 
-    @pytest.mark.skip(reason="Not need to test every time")
     def test_forgot_password(self, driver):
         driver.get(URL)
         login_page = LoginPage(driver)
@@ -124,6 +124,7 @@ class TestLogin:
         login_page.wait_for_url_contains("chat")
         # assert "chat" in driver.current_url
         assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+
 
 
 

@@ -5,6 +5,9 @@ import pytest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
+from config.config import URL, USERNAME, PASSWORD,NEW_PASSWORD
+
+from pages.login_page import LoginPage
 
 
 def pytest_addoption(parser):
@@ -16,14 +19,14 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="class")
 def driver(request):
     chrome_options = Options()
 
     # Default to headless in CI/sandboxed environments unless overridden.
     run_headless = request.config.getoption("--headless")
     if run_headless:
-        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--headless")
 
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
@@ -57,3 +60,18 @@ def pytest_runtest_makereport(item, call):
         except WebDriverException:
             # If the browser crashed or session already closed, avoid failing pytest internals.
             pass
+
+
+@pytest.fixture(scope="class")
+def login(driver):
+    driver.get(URL)
+    login_page = LoginPage(driver)
+    # Enter login detail
+    login_page.enter_email(USERNAME)
+    login_page.enter_password(PASSWORD)
+    login_page.click_login()
+    login_page.enter_otp("712312")
+    login_page.wait_for_url_contains("chat")
+    # assert "chat" in driver.current_url
+    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+    # replace credentials

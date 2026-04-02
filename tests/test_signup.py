@@ -4,7 +4,7 @@ import allure
 import pytest
 from pages.login_page import LoginPage
 from pages.signup_page import Signup
-from tests.test_login import TestLogin
+
 from utils.helpers import generate_unique_email
 from config.config import URL, USERNAME, PASSWORD
 import logging

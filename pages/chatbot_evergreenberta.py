@@ -10,13 +10,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class ChatbotEvergreenBetaPage(ChatpotPage):
 
-    GUIDELINE_SELECTION_CONFIRMATION=(By.XPATH,"(//button[@type='button'])[3]")
-    GUIDELINE_SELECTION_GOVERNMENT = (By.XPATH, "(//button[@type='button'])[11]")
-    GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING = (By.XPATH, "(//button[@type='button'])[18]")
-    GUIDELINE_SELECTION_NON_QM = (By.XPATH, "(//button[@type='button'])[30]")
-    GUIDELINE_SELECTION_CONSTRUCTION = (By.XPATH, "(//button[@type='button'])[34]")
-    GUIDELINE_SELECTION_PORTFOLIO = (By.XPATH, "(//button[@type='button'])[41]")
-    GUIDELINE_SELECTION_HELOC = (By.XPATH, "(//button[@type='button'])[43]")
+    GUIDELINE_SELECTION_CONFIRMATION=(By.XPATH,"(//button[@type='button'])[4]")
+    GUIDELINE_SELECTION_GOVERNMENT = (By.XPATH, "(//button[@type='button'])[12]")
+    GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING = (By.XPATH, "(//button[@type='button'])[19]")
+    GUIDELINE_SELECTION_NON_QM = (By.XPATH, "(//button[@type='button'])[31]")
+    GUIDELINE_SELECTION_CONSTRUCTION = (By.XPATH, "(//button[@type='button'])[35]")
+    GUIDELINE_SELECTION_PORTFOLIO = (By.XPATH, "(//button[@type='button'])[42]")
+    GUIDELINE_SELECTION_HELOC = (By.XPATH, "(//button[@type='button'])[44]")
 
     # Confirming Chatbot locaters
     # Note: Hardcoded locators have been removed in favor of dynamic generation using parameterized f-strings.

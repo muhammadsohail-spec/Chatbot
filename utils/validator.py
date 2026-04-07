@@ -5,7 +5,7 @@ class ResponseValidator:
     """Reusable validation logic"""
 
     INVALID_PATTERNS = [
-        r"Unauthorized"
+        r"Error fetching response"
     ]
 
     @staticmethod

@@ -1,26 +1,9 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-import time
+arr=[10,25,5,45,20]
+max=arr[0]
 
-# Initialize Chrome driver
-service = Service()
-driver = webdriver.Chrome(service=service)
+for m in arr:
+    if m>max:
+     max=m
 
-# Maximize window
-driver.maximize_window()
 
-# Open website
-driver.get("https://practice.expandtesting.com/checkboxes")
-
-# Find checkboxes
-elements = driver.find_elements(By.XPATH, "//input[@type='checkbox']")
-
-# Click all checkboxes
-for checkbox in elements:
-    checkbox.click()
-
-time.sleep(5)
-
-# Close browser
-driver.quit()
+print(max)

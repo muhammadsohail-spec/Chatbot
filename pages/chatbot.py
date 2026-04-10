@@ -21,6 +21,8 @@ class ChatpotPage(BasePage):
   SELECT_LENDER_PARTNER_OPTION4 = (By.XPATH, "//span[normalize-space()='Truist']")
   SELECT_LENDER_PARTNER_OPTION5 = (By.XPATH, "//span[normalize-space()='xyz']")
 
+  Click_lender_guideline_selection=(By.XPATH,"/html[1]/body[1]/div[2]/div[1]/main[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/button[1]")
+
   SUBMIT_BUTTON=(By.XPATH,"//button[@type='submit']")
   ERROR_MESSAGE=(By.XPATH,"//*[normalize-space()='Unauthorized']")
   ERROR_MESSAGE2 = (By.XPATH, "//div[contains(text(),'Error creating session')]")
@@ -31,6 +33,13 @@ class ChatpotPage(BasePage):
       try:
           self.wait_for_visibility(self.SELECT_LENDER_PARTNER)
           self.click(self.SELECT_LENDER_PARTNER)
+      except (TimeoutException, NoSuchElementException) as e:
+          print(f"button not clickable: {e}")
+
+  def click_lender_and_guidelines_selection(self):
+      try:
+          self.wait_for_visibility(self.Click_lender_guideline_selection)
+          self.click(self.Click_lender_guideline_selection)
       except (TimeoutException, NoSuchElementException) as e:
           print(f"button not clickable: {e}")
 

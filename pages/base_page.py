@@ -2,6 +2,9 @@
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from utils.logger import get_logger
+
+logger = get_logger("BasePage")
 
 class BasePage:
     def __init__(self, driver, timeout=30):

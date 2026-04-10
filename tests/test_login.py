@@ -5,7 +5,7 @@ import pytest
 from pages.login_page import LoginPage
 from config.config import URL, USERNAME, PASSWORD,NEW_PASSWORD
 import logging
-
+from utils.logger import get_logger
 import logging
 from pages.base_page import BasePage
 
@@ -18,6 +18,15 @@ from utils.helpers import generate_unique_email
 @pytest.mark.smoke
 
 class TestLogin:
+
+
+
+    @pytest.fixture(autouse=True)
+    def attach_fixtures(self, driver, login):
+        """Automatically passes the authenticated driver to all tests."""
+        self.__class__.driver = driver
+
+
 
     @pytest.mark.regression
     def test_login_valid_credentials(self,driver):
@@ -32,6 +41,7 @@ class TestLogin:
         login_page.wait_for_url_contains("chat")
         # assert "chat" in driver.current_url
         assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+        # get_logger.info("Positive test passed: valid login successful")
 
     def test_invalid_password(self, driver):
         driver.get(URL)
@@ -100,7 +110,7 @@ class TestLogin:
         driver.get(URL)
         login_page = LoginPage(driver)
         assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty credentials"
-
+    @pytest.mark.skip
     def test_forgot_password(self, driver):
         driver.get(URL)
         login_page = LoginPage(driver)

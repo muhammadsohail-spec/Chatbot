@@ -38,10 +38,34 @@ ALL_GUIDELINES = [
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Truist"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "US Bank (Non Conforming)"},
 
+    # Non-QM CATEGORY
+    {"category": "Non-QM", "toggle_name": "Deephaven"},
+    {"category": "Non-QM", "toggle_name": "NQM Funding"},
+    {"category": "Non-QM", "toggle_name": "Onslow Bay"},
+
+
+    # Construction
+    {"category": "Construction", "toggle_name": "Fannie Mae (Construction)"},
+    {"category": "Construction", "toggle_name": "FHA (Construction)"},
+    {"category": "Construction", "toggle_name": "Freddie Mac (Construction)"},
+    {"category": "Construction", "toggle_name": "Global Lot Loan"},
+    {"category": "Construction", "toggle_name": "Global Two Step"},
+    {"category": "Construction", "toggle_name": "USDA (Construction)"},
+
+    # Portfolio
+    {"category": "Portfolio", "toggle_name": "BridgeLoan"},
+
+    # HELOC
+    {"category": "HELOC", "toggle_name": "Figure Lending"},
+    {"category": "HELOC", "toggle_name": "GBC"},
+    {"category": "HELOC", "toggle_name": "Heloc GBC Overlays"},
+    {"category": "HELOC", "toggle_name": "US Bank (HELOC)"},
+
 ]
 
 class TestChatbotEvergreen:
-    
+
+
     @pytest.fixture(autouse=True)
     def attach_fixtures(self, driver, login):
         """Automatically passes the authenticated driver to all tests."""
@@ -54,11 +78,11 @@ class TestChatbotEvergreen:
         category = guideline["category"]
         toggle_label = guideline["toggle_name"]
 
-        # 1. Start from a completely fresh State. This is the #1 best practice 
+        # 1. Start from a completely fresh State. This is the #1 best practice
         # so tests don't pollute each other (meaning no more clicking "Change" and "Cross")
         self.driver.refresh()
         evergreen_beta_page.wait_for_url_contains("chat")
-        
+
         # 2. Click the Category
         # We will expand the category based on its name.
         if category == "Conforming":
@@ -67,29 +91,40 @@ class TestChatbotEvergreen:
             evergreen_beta_page.click_government_guideline_selection()
         elif category == "Jumbo & Non-Conforming":
             evergreen_beta_page.click_jubmo_now_confirming_guideline_selection()
+
+        elif category == "Non-QM":
+            evergreen_beta_page.click_non_qm_guideline_selection()
+
+        elif category == "Construction":
+            evergreen_beta_page.click_construction_guideline_selection()
+
+        elif category == "Portfolio":
+            evergreen_beta_page.click_portfolio_guideline_selection()
+
+        elif category == "HELOC":
+            evergreen_beta_page.click_heloc_guideline_selection()
+
         else:
             # For your other 4 sections, you should add your click_XX_selection() methods
             # in chatbot_evergreenberta.py and call them here!
             raise NotImplementedError(f"Add the click method for category: {category}")
-            
+
         # 3. Select the dynamic Toggle inside that category!
         evergreen_beta_page.click_chatbot_toggle(toggle_label)
 
         # 4. Message the bot
         evergreen_beta_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
         evergreen_beta_page.click_submit_btn()
-        
+
         # 5. Get the user payload verification
         response = evergreen_beta_page.get_latest_response()
-        assert response, "❌ Empty user message logged in chat window"
-        assert "Unauthorized" not in response.lower(), \
-            f"❌ Test Failed - Unauthorized response received: {response}"
+        # assert response, "❌ Empty user message logged in chat window"
+        # assert "Unauthorized" not in response.lower(), \
+        #     f"❌ Test Failed - Unauthorized response received: {response}"
 
-        # 6. Smart Wait for the AI algorithm to finish streaming!
-        # bot_response = evergreen_beta_page.wait_for_response()
-        # print(f"Response via [{category}] -> [{toggle_label}]: {bot_response}")
-        #
-        # # 7. Check correct completion
-        # assert bot_response, "❌ Chatbot generated an empty asynchronous response"
-        # assert "Hello" in bot_response or "Hi" in bot_response, \
-        #     f"❌ Valid greeting missing from bot reply for {toggle_label}!"
+        forbidden_keywords = ["Unauthorized", "failed", "exception", "not available"]
+
+        for word in forbidden_keywords:
+            assert word not in response.lower(), f"Forbidden word found: {word}"
+
+

@@ -2,9 +2,12 @@
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from utils.logger import get_logger
+
+logger = get_logger("BasePage")
 
 class BasePage:
-    def __init__(self, driver, timeout=30):
+    def __init__(self, driver, timeout=10):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout)
 
@@ -25,7 +28,7 @@ class BasePage:
         return self.wait.until(EC.visibility_of_element_located(locator)).text
 
     # Wait for element to be visible
-    def wait_for_visibility(self, locator, timeout=30):
+    def wait_for_visibility(self, locator, timeout=10):
         return WebDriverWait(self.driver, timeout).until(
             EC.visibility_of_element_located(locator)
         )

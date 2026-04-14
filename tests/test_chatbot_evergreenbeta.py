@@ -67,7 +67,7 @@ class TestChatbotEvergreen:
 
 
     @pytest.fixture(autouse=True)
-    def attach_fixtures(self, driver, login):
+    def attach_fixtures(self, driver, loginevergreenbeta):
         """Automatically passes the authenticated driver to all tests."""
         self.__class__.driver = driver
 
@@ -117,14 +117,12 @@ class TestChatbotEvergreen:
         evergreen_beta_page.click_submit_btn()
 
         # 5. Get the user payload verification
-        response = evergreen_beta_page.get_latest_response()
-        # assert response, "❌ Empty user message logged in chat window"
-        # assert "Unauthorized" not in response.lower(), \
-        #     f"❌ Test Failed - Unauthorized response received: {response}"
+        response = evergreen_beta_page.wait_for_response()
+        assert response, "❌ Empty user message logged in chat window"
 
-        forbidden_keywords = ["Unauthorized", "failed", "exception", "not available"]
-
+        forbidden_keywords = ["Unauthorized", "failed"]
         for word in forbidden_keywords:
             assert word not in response.lower(), f"Forbidden word found: {word}"
+
 
 

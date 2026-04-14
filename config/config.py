@@ -1,7 +1,7 @@
 # config/config.py
 
 URL = "https://evergreenbeta.guidelinebuddy.com/auth/login"
-URL1 ="https://beta.guidelinebuddy.com/chat"
+URLBeta ="https://beta.guidelinebuddy.com/chat"
 USERNAME = "testsadaf2+testing1@gmail.com"
 PASSWORD = "DefaultPassword123."
 NEW_PASSWORD = "DefaultPassword123*"

@@ -17,3 +17,4 @@ class ChatbotFsbBetaPage(ChatpotPage):
             self.click(locator)
         except (TimeoutException, NoSuchElementException) as e:
             print(f"button not clickable: {e}")
+            print(f"button not clickable: {e}")

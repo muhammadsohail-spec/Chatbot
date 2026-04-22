@@ -1,12 +1,8 @@
 import pytest
 
-@pytest.fixture()
-def setup():
-    print("this method run first")
 
-@pytest.mark.smoke
-def test_wer(setup):
-    print("after fixture this method cala")
-@pytest.mark.regression
-def test_wer2(setup):
-    print("after fixture this method cala")
+@pytest.mark.parametrize("n,expected", [(1, 2), (3, 5)])
+class TestParatice:
+
+    def test(self,n,expected):
+        assert  n + 1== expected

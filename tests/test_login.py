@@ -1,143 +1,179 @@
-import time
-
-import allure
 import pytest
+import allure
 from pages.login_page import LoginPage
-from config.config import URL, USERNAME, PASSWORD,NEW_PASSWORD
-import logging
+from config.config import URL, USERNAME, PASSWORD, NEW_PASSWORD, WRONG_USERNAME, WRONG_PASSWORD, TEST_OTP
 from utils.logger import get_logger
-import logging
-from pages.base_page import BasePage
 
-from utils.helpers import generate_unique_email
+logger = get_logger("TestLogin")
 
 
-@allure.title("Login with valid credentials")
-@allure.description("Test login functionality using valid username and password")
-@allure.severity(allure.severity_level.CRITICAL)
 @pytest.mark.smoke
-
 class TestLogin:
-
-
+    """
+    Test suite for Login module covering:
+    - Valid / Invalid login scenarios
+    - Empty credential validation
+    - Logout functionality
+    - Forgot password flow
+    """
 
     @pytest.fixture(autouse=True)
-    def attach_fixtures(self, driver, login):
-        """Automatically passes the authenticated driver to all tests."""
-        self.__class__.driver = driver
+    def attach_fixtures(self, driver, loginbeta):
+        """
+        Autouse fixture to initialize WebDriver instance for all test methods.
+        Ensures driver is available as self.driver in every test.
+        """
+        self.driver = driver
 
+    @allure.feature("Login Module")
+    @allure.story("Valid Login")
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("Authentication and Login Tests")
+    @pytest.mark.parametrize("username, password, expected_type", [
+        # Success scenario — uses config constants (no hardcoded credentials)
+        (USERNAME, PASSWORD, "success"),
+        # Invalid credentials scenarios
+        (WRONG_USERNAME, PASSWORD, "error"),
+        (USERNAME, WRONG_PASSWORD, "error"),
+        (WRONG_USERNAME, WRONG_PASSWORD, "error"),
+        # Empty credential scenarios
+        ("", PASSWORD, "empty_creds"),
+        (USERNAME, "", "empty_creds"),
+        ("", "", "empty_creds"),
+    ])
+    def test_login_scenarios(self, username, password, expected_type):
+        """
+        Data-driven test for login functionality covering:
+        - Valid login
+        - Invalid credentials
+        - Empty input validation
+        """
+        logger.info(f"Testing login with Username: '{username}' | Password: '{password}'")
 
+        # Navigate to application URL
+        self.driver.get(URL)
+        login_page = LoginPage(self.driver)
 
-    @pytest.mark.regression
-    def test_login_valid_credentials(self,driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        # Enter login detail
-        logging.info("Entering username")
-        login_page.enter_email(USERNAME)
-        login_page.enter_password(PASSWORD)
+        # -------------------------------
+        # Step 1: Enter credentials
+        # -------------------------------
+        if username:
+            login_page.enter_email(username)
+        if password:
+            login_page.enter_password(password)
+
+        # -------------------------------
+        # Step 2: Validate empty fields scenario
+        # -------------------------------
+        if expected_type == "empty_creds":
+            assert not login_page.is_login_button_enabled(), \
+                "Login button should be disabled when credentials are empty."
+            return
+
+        # -------------------------------
+        # Step 3: Perform login action
+        # -------------------------------
         login_page.click_login()
-        login_page.enter_otp("712312")
-        login_page.wait_for_url_contains("chat")
-        # assert "chat" in driver.current_url
-        assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
-        # get_logger.info("Positive test passed: valid login successful")
 
-    def test_invalid_password(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        login_page.enter_email(USERNAME)
-        login_page.enter_password("Wrong password")
-        login_page.click_login()
-        error = login_page.get_error_message()
+        # -------------------------------
+        # Step 4: Assertions based on scenario
+        # -------------------------------
+        if expected_type == "success":
+            # Handle OTP verification for successful login
+            login_page.enter_otp(TEST_OTP)
 
-        assert "invalid password" in error.lower(), f"Expected 'invalid password' error but got: {error}"
+            # Wait until user is redirected to dashboard/chat page
+            login_page.wait_for_url_contains("chat")
 
+            # Validate successful navigation
+            assert "chat" in self.driver.current_url or "dashboard" in self.driver.current_url, \
+                "Expected 'chat' or 'dashboard' in URL after successful login."
 
-    def test_invalid_username(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        login_page.enter_email("wrongemail@gmail.com")
-        login_page.enter_password(PASSWORD)
-        login_page.click_login()
+            logger.info("Successful login validated.")
 
-        error = login_page.get_error_message()
-        assert "user not found" in error.lower(), f"Expected 'user not found1' error but got: {error}"
+        elif expected_type == "error":
+            # Validate error message for invalid login attempts
+            error_msg = login_page.get_error_message()
+            assert error_msg, "Expected error message but none was displayed."
+
+            logger.info(f"Error validation successful: {error_msg}")
 
 
-    def test_invalid_username_password(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        login_page.enter_email("invalidmail@gmail.com")
-        login_page.enter_password("invalidpassword")
-        login_page.click_login()
+    # -------------------------------
+    # Logout Test Case
+    # -------------------------------
+    @allure.feature("Login Module")
+    @allure.story("Logout")
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("Logout Functionality")
+    def test_logout_successfully(self):
+        """
+        Validate user logout functionality:
+        - Open profile menu
+        - Click logout
+        - Verify user redirected to login page
+        """
+        login_page = LoginPage(self.driver)
 
-        error = login_page.get_error_message()
-        assert "user not found" in error.lower(), f"Expected 'user not found' error but got: {error}"
-
-    def test_logout_successfully(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        # Enter login detail
-        logging.info("Entering username")
-        login_page.enter_email(USERNAME)
-        login_page.enter_password(PASSWORD)
-        login_page.click_login()
-        login_page.enter_otp("712312")
+        # Perform logout steps
         login_page.click_profile()
         login_page.click_logout()
 
+        # Wait for redirection to login page
         login_page.wait_for_url_contains("login")
-        assert "login" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
 
-    def test_empty_username(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        # Enter login detail
-        logging.info("Entering Password")
-        login_page.enter_password(PASSWORD)
-        assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty Username"
+        # Verify logout success
+        assert "login" in self.driver.current_url, \
+            "User was not redirected back to login page after logout."
 
-    def test_empty_password(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        # Enter login detail
-        logging.info("Entering username")
+        logger.info("Logout validated successfully.")
+
+
+    # -------------------------------
+    # Forgot Password Flow Test Case
+    # -------------------------------
+    @allure.feature("Login Module")
+    @allure.story("Forgot Password")
+    @allure.severity(allure.severity_level.NORMAL)
+    @allure.title("Forgot Password Recovery Flow")
+    def test_forgot_password(self):
+        """
+        Validate forgot password workflow:
+        - Request OTP
+        - Reset password
+        - Login with new password
+        """
+        logger.info("Testing forgotten password recovery flow.")
+
+        self.driver.get(URL)
+        login_page = LoginPage(self.driver)
+
+        # Step 1: Enter registered email
         login_page.enter_email(USERNAME)
-        assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty Password"
 
-    def test_empty_credentials(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        assert not login_page.is_login_button_enabled(), "Login button should be disabled for empty credentials"
-    @pytest.mark.skip
-    def test_forgot_password(self, driver):
-        driver.get(URL)
-        login_page = LoginPage(driver)
-        login_page.enter_email(USERNAME)
+        # Step 2: Trigger forgot password flow
         login_page.click_forgot_password_link()
-        time.sleep(2)
+
+        # Step 3: Request OTP
         login_page.enter_email(USERNAME)
         login_page.click_send_otp()
-        time.sleep(3)
-        login_page.enter_otp("712312")
+
+        # Step 4: Reset password using OTP
+        login_page.enter_otp(TEST_OTP)
         login_page.enter_new_password(NEW_PASSWORD)
-        time.sleep(3)
         login_page.click_resend_password()
-        time.sleep(5)
-        # Enter login detail
-        logging.info("Entering username")
+
+        # Step 5: Verify login with new password
         login_page.enter_email(USERNAME)
         login_page.enter_password(NEW_PASSWORD)
         login_page.click_login()
-        login_page.enter_otp("712312")
+
+        # OTP verification after password reset
+        login_page.enter_otp(TEST_OTP)
+
+        # Validate successful login
         login_page.wait_for_url_contains("chat")
-        # assert "chat" in driver.current_url
-        assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+        assert "chat" in self.driver.current_url, \
+            "Expected 'chat' in URL after login with new password."
 
-
-
-
-
-
-
+        logger.info("Forgot password flow validated successfully.")

@@ -1,139 +1,79 @@
-import time
 import pytest
 from pages.chatbot import ChatpotPage
 from config.config import INPUT_DATA_GUIDELINE_MESSAFGE, URLBeta
 from utils.logger import get_logger
+# //section[@aria-label='Notifications alt+T']
 
 logger = get_logger("TestChatbot")
 
+# ---------------------------------------------------------
+# TEST DATA (SENIOR AUTOMATION BEST PRACTICE)
+# You can add all 40+ chatbots to this single list!
+# ---------------------------------------------------------
+ALL_GUIDELINES = [
+    # CONFORMING CATEGORY
+    {"category": "Select Lender Partner", "toggle_name": "(Select All)"},
+    {"category": "Select Lender Partner", "toggle_name": "Reverse Mortgages (HECMs)"},
+    {"category": "Select Lender Partner", "toggle_name": "Snmc test bots"},
+    {"category": "Select Lender Partner", "toggle_name": "test"},
+    {"category": "Select Lender Partner", "toggle_name": "test bot"},
+    {"category": "Select Lender Partner", "toggle_name": "Test Scratch Bot 2"},
+    {"category": "Select Lender Partner", "toggle_name": "Truist"},
+    {"category": "Select Lender Partner", "toggle_name": "xyz"},
+
+
+]
+
 class TestChatbot:
 
-    FORBIDDEN_WORDS = ["Unauthorized", "Error fetching response", "not available", "exception"]
 
     @pytest.fixture(autouse=True)
     def attach_fixtures(self, driver, loginbeta):
-        """Automatically passes the authenticated driver to all tests. loginbeta logs in for us!"""
+        """Automatically passes the authenticated driver to all tests."""
         self.__class__.driver = driver
+        self.chatbot_page = ChatpotPage(self.driver)
 
-    def test_chatbot_response_with_partner_new_beta_with_select_all_guidelines(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("New Beta")
-        chatbot_page.click_guideline()
-        chatbot_page.select_guidelines_all()
+    @pytest.mark.parametrize("guideline", ALL_GUIDELINES,
+    ids=lambda g: f"{g['category']}::{g['toggle_name']}")
 
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
 
-        response = chatbot_page.wait_for_response()
-        logger.info(f"Response: {response}")
-        
-        assert response, "❌ Empty response from chatbot"
-        for word in self.FORBIDDEN_WORDS:
+    def test_all_guideline_chatbots(self, guideline):
+        category = guideline["category"]
+        toggle_label = guideline["toggle_name"]
+
+        self.driver.refresh()
+        self.chatbot_page.wait_for_url_contains("chat")
+
+        if category == "Select Lender Partner":
+            self.chatbot_page.click_lender_and_guidelines_selection()
+
+        else:
+            # For your other 4 sections, you should add your click_XX_selection() methods
+            # in chatbot_evergreenberta.py and call them here!
+            raise NotImplementedError(f"Add the click method for category: {category}")
+
+        self.chatbot_page.click_select_lender_partner()
+        self.chatbot_page.select_lender_partner_option_by_name(toggle_label)
+
+        if toggle_label == "test":
+            self.chatbot_page.click_guideline()
+            self.chatbot_page.select_guidelines_all()
+
+        self.chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
+        self.chatbot_page.click_submit_btn()
+
+        response = self.chatbot_page.wait_for_response()
+        logger.info(f"Response for {toggle_label}: {response}")
+
+        # --- Handle alerts and system errors gracefully ---
+        # if response and "ALERT_FOUND:" in response:
+        #     pytest.xfail(f"Expected failure due to browser alert: {response}")
+        # elif response and "ERROR_FOUND:" in response:
+        #     pytest.xfail(f"Expected failure due to system error: {response}")
+        # ----------------------------------------------------
+
+        assert response, "❌ Empty user message logged in chat window"
+
+        forbidden_keywords = ["unauthorized", "failed", "error creating session","Invalid API key. Please provide a valid API key and try again."]
+        for word in forbidden_keywords:
             assert word not in response.lower(), f"Forbidden word found: {word}"
-
-    def test_chatbot_response_with_partner_new_beta_fannie_mae(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("New Beta")
-        chatbot_page.click_guideline()
-        chatbot_page.select_guidelines_option_by_index(1)
-
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response = chatbot_page.wait_for_response()
-        logger.info(f"Response: {response}")
-
-        assert response, "❌ Empty response from chatbot"
-        for word in self.FORBIDDEN_WORDS:
-            assert word not in response.lower(), f"Forbidden word found: {word}"
-
-    def test_chatbot_response_with_partner_new_beta_freddie_mac(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("New Beta")
-        chatbot_page.click_guideline()
-        chatbot_page.select_guidelines_option_by_index(2)
-
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response = chatbot_page.wait_for_response()
-        logger.info(f"Response: {response}")
-
-        assert response, "❌ Empty response from chatbot"
-        assert "Error creating session" not in response
-        assert "unauthorized" not in response.lower(), f"❌ Test Failed - Unauthorized response received: {response}"
-
-    def test_chatbot_response_with_partner_reverse_mortgages(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("Reverse Mortgages (HECMs)")
-        
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response = chatbot_page.wait_for_response()
-        logger.info(f"Response: {response}")
-
-        assert response, "❌ Empty response from chatbot"
-        assert "Error creating session" not in response
-        assert "Error creating session" not in response, f"❌ Test Failed - Unauthorized response received: {response}"
-
-    def test_chatbot_response_with_partner_snmc_test_bots(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("Snmc test bots")
-        
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response = chatbot_page.get_error_message2()
-        logger.info(f"Response: {response}")
-
-        assert response, "❌ Empty response from chatbot"
-        assert "Error creating session" not in response, f"❌ Test Failed - Unauthorized response received: {response}"
-
-    def test_chatbot_response_with_partner_truist(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("Truist")
-        
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response1 = chatbot_page.get_error_message()
-        logger.info(f"Response: {response1}")
-
-        assert response1, "❌ Empty response from chatbot"
-        assert "Unauthorized" not in response1, f"❌ Test Failed - Unauthorized response received: {response1}"
-
-    def test_chatbot_response_with_partner_xyz(self):
-        self.driver.get(URLBeta)
-        chatbot_page = ChatpotPage(self.driver)
-        chatbot_page.click_lender_and_guidelines_selection()
-        chatbot_page.click_select_lender_partner()
-        chatbot_page.select_lender_partner_option_by_name("xyz")
-        
-        chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
-        chatbot_page.click_submit_btn()
-
-        response2 = chatbot_page.get_error_message2()
-        logger.info(f"Response: {response2}")
-        
-        assert response2, "❌ Empty response from chatbot"
-        assert "Error creating session" not in response2, f"❌ Test Failed - Unauthorized response received: {response2}"

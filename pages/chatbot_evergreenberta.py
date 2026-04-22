@@ -8,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 
-class ChatbotEvergreenBetaPage(ChatpotPage):
+class ChatbotEvergreenBetaPage():
 
     GUIDELINE_SELECTION_CONFIRMATION=(By.XPATH,"(//button[@type='button'])[4]")
     GUIDELINE_SELECTION_GOVERNMENT = (By.XPATH, "(//button[@type='button'])[12]")
@@ -30,7 +30,8 @@ class ChatbotEvergreenBetaPage(ChatpotPage):
     CROSS_BTN = (By.XPATH,"(//button[contains(@class, 'ring-offset-background') and contains(@class, 'absolute') and contains(@class, 'top-4') and contains(@class, 'right-4')])[1]")
     MESSAGE=(By.XPATH,"//textarea[@placeholder='Ask me anything about mortgage guidelines...']")
 
-    chat_message=(By.CSS_SELECTOR,"div[class='chat-message']")
+    chat_message=(By.XPATH,"//div[@class='prose prose-p:my-2 prose-ul:my-2 prose-ol:my-2 max-w-none chat-message']")
+
 
     def click_confirmation_guideline_selection(self):
         try:
@@ -121,7 +122,7 @@ class ChatbotEvergreenBetaPage(ChatpotPage):
             print(f"[ERROR] Cannot get messages: {e}")
             return ""
 
-    def wait_for_response(self, timeout=40):
+    def wait_for_response(self, timeout=20):
         """Wait for a new message to appear and finish streaming"""
         old_len = len(self.driver.find_elements(*self.chat_message))
         for _ in range(10):  # Give it 10 seconds to start replying

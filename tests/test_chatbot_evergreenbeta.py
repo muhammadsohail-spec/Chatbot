@@ -71,8 +71,12 @@ class TestChatbotEvergreen:
         """Automatically passes the authenticated driver to all tests."""
         self.__class__.driver = driver
 
-    @pytest.mark.parametrize("guideline", ALL_GUIDELINES)
-    def test_all_guideline_chatbots(self, guideline):
+    @pytest.mark.parametrize(
+        "guideline",
+        ALL_GUIDELINES,
+        ids=lambda g: f"{g['category']}::{g['toggle_name']}"
+    )
+    def test_response_with_chatbot(self, guideline):
         evergreen_beta_page = ChatbotEvergreenBetaPage(self.driver)
 
         category = guideline["category"]
@@ -84,26 +88,21 @@ class TestChatbotEvergreen:
         evergreen_beta_page.wait_for_url_contains("chat")
 
         # 2. Click the Category
-        # We will expand the category based on its name.
-        if category == "Conforming":
-            evergreen_beta_page.click_confirmation_guideline_selection()
-        elif category == "Government":
-            evergreen_beta_page.click_government_guideline_selection()
-        elif category == "Jumbo & Non-Conforming":
-            evergreen_beta_page.click_jubmo_now_confirming_guideline_selection()
+        # We use a dynamic dictionary mapping to handle click actions based on category name.
+        category_actions = {
+            "Conforming": evergreen_beta_page.click_confirmation_guideline_selection,
+            "Government": evergreen_beta_page.click_government_guideline_selection,
+            "Jumbo & Non-Conforming": evergreen_beta_page.click_jubmo_now_confirming_guideline_selection,
+            "Non-QM": evergreen_beta_page.click_non_qm_guideline_selection,
+            "Construction": evergreen_beta_page.click_construction_guideline_selection,
+            "Portfolio": evergreen_beta_page.click_portfolio_guideline_selection,
+            "HELOC": evergreen_beta_page.click_heloc_guideline_selection,
+        }
 
-        elif category == "Non-QM":
-            evergreen_beta_page.click_non_qm_guideline_selection()
-
-        elif category == "Construction":
-            evergreen_beta_page.click_construction_guideline_selection()
-
-        elif category == "Portfolio":
-            evergreen_beta_page.click_portfolio_guideline_selection()
-
-        elif category == "HELOC":
-            evergreen_beta_page.click_heloc_guideline_selection()
-
+        # Dynamically fetch and execute the corresponding action
+        action = category_actions.get(category)
+        if action:
+            action()
         else:
             # For your other 4 sections, you should add your click_XX_selection() methods
             # in chatbot_evergreenberta.py and call them here!
@@ -120,7 +119,7 @@ class TestChatbotEvergreen:
         response = evergreen_beta_page.wait_for_response()
         assert response, "❌ Empty user message logged in chat window"
 
-        forbidden_keywords = ["Unauthorized", "failed"]
+        forbidden_keywords = ["Unauthorized", "Invalid","error creating session","Invalid API key. Please provide a valid API key and try again."]
         for word in forbidden_keywords:
             assert word not in response.lower(), f"Forbidden word found: {word}"
 

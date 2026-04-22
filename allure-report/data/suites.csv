@@ -1,5 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"Test login functionality using valid username and password","8866","test_login_valid_credentials","tests","2026-03-24","passed","2026-03-24","TestLogin","test_login","",""
-"Test login functionality using valid username and password","4118","test_invalid_username","tests","2026-03-24","passed","2026-03-24","TestLogin","test_login","",""
-"Test login functionality using valid username and password","14078","test_invalid_password","tests","2026-03-24","broken","2026-03-24","TestLogin","test_login","",""
-"Test login functionality using valid username and password","11682","test_invalid_username_password","","2026-03-24","passed","2026-03-24","","","",""

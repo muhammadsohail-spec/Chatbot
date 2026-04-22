@@ -1,1 +1,0 @@
-{"name": "test_chatbot_response_with_partner_new_beta", "status": "passed", "start": 1774530184684, "stop": 1774530189120, "uuid": "60e12f34-cff7-483e-a383-62a34285f918", "testCaseId": "ceaa9150edd325755ad00ab742b066b9", "fullName": "tests.test_chatbot.TestChatbot#test_chatbot_response_with_partner_new_beta", "titlePath": ["tests", "test_chatbot.py", "TestChatbot"]}

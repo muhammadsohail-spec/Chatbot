@@ -1,6 +1,6 @@
 import time
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, NoAlertPresentException
 from pages.base_page import BasePage
 from selenium.webdriver.support import expected_conditions as EC
 from utils.logger import get_logger
@@ -10,7 +10,8 @@ logger = get_logger("ChatbotPage")
 class ChatpotPage(BasePage):
     # Core Dropdown Locators
     SELECT_LENDER_PARTNER = (By.XPATH,"/html[1]/body[1]/div[2]/div[1]/main[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/button[1]")
-    SELECT_GUIDELINE = (By.XPATH, "/html[1]/body[1]/div[2]/div[1]/main[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/button[2]/div[1]")
+    SELECT_GUIDELINE = (By.XPATH, "/html[1]/body[1]/div[2]/div[1]/main[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/button[2]")
+
     SELECT_GUIDELINE_select_all = (By.XPATH,"/html[1]/body[1]/div[3]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]")
     
     # Interaction Locators
@@ -21,7 +22,7 @@ class ChatpotPage(BasePage):
     # Verification Locators
     ERROR_MESSAGE = (By.XPATH,"//*[normalize-space()='Unauthorized']")
     ERROR_MESSAGE2 = (By.XPATH, "//div[contains(text(),'Error creating session')]")
-    LATEST_RESPONSE = (By.XPATH,"//div[@class='chat-message']")
+    LATEST_RESPONSE = (By.XPATH,"//div[@class='prose prose-p:my-2 prose-ul:my-2 prose-ol:my-2 max-w-none chat-message']")
 
     def click_select_lender_partner(self):
         try:
@@ -92,6 +93,25 @@ class ChatpotPage(BasePage):
     def get_error_message2(self):
         return self.get_text(self.ERROR_MESSAGE2)
 
+    def get_alert_text_if_present(self):
+        try:
+            alert = self.driver.switch_to.alert
+            alert_text = alert.text
+            alert.accept()  # or alert.dismiss() if needed
+            return alert_text
+
+        except NoAlertPresentException:
+            return None
+
+    def click_chatbot_toggle(self, toggle_label: str):
+        locator = (By.XPATH, f"//button[@aria-label='Toggle {toggle_label}']")
+        try:
+            self.wait_for_visibility(locator)
+            self.click(locator)
+        except (TimeoutException, NoSuchElementException) as e:
+            logger.error(f"Toggle button not clickable for {toggle_label}: {e}")
+            raise
+
     def get_latest_response(self) -> str:
         try:
             elements = self.wait.until(EC.presence_of_all_elements_located(self.LATEST_RESPONSE))
@@ -102,8 +122,30 @@ class ChatpotPage(BasePage):
     def wait_for_response(self, timeout=10):
         """Wait for a new message to appear and finish streaming"""
         old_len = len(self.driver.find_elements(*self.LATEST_RESPONSE))
+
         for _ in range(10):  # Give it 10 seconds to start replying
             time.sleep(1)
+
+            # --- HANDLE ALERTS & ERRORS ---
+            # 1. Check for Javascript Alert
+            try:
+                alert = self.driver.switch_to.alert
+                alert_text = alert.text
+                alert.accept()
+                return f"ALERT_FOUND: {alert_text}"
+            except Exception:
+                pass
+
+            # 2. Check for "Error creating session" or "Unauthorized" in DOM
+            error2_elements = self.driver.find_elements(*self.ERROR_MESSAGE2)
+            if error2_elements and error2_elements[0].is_displayed():
+                return f"ERROR_FOUND: {error2_elements[0].text}"
+
+            error1_elements = self.driver.find_elements(*self.ERROR_MESSAGE)
+            if error1_elements and error1_elements[0].is_displayed():
+                return f"ERROR_FOUND: {error1_elements[0].text}"
+            # ------------------------------
+
             new_len = len(self.driver.find_elements(*self.LATEST_RESPONSE))
             if new_len > old_len:
                 break

@@ -47,3 +47,4 @@ class BasePage:
 
     def wait_for_url_contains(self, keyword, timeout=10) -> None:
         WebDriverWait(self.driver, timeout).until(EC.url_contains(keyword))
+        print("sohail")

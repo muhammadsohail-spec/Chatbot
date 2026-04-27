@@ -7,6 +7,7 @@ from pages.fsbbeta import ChatbotFsbBetaPage
 from utils.helpers import generate_dynamic_chat_message, extract_link
 
 ALL_GUIDELINES = [
+
     # CONFORMING CATEGORY
     {"category": "Conforming", "toggle_name": "Ameri Home (Conforming)"},
     {"category": "Conforming", "toggle_name": "Bayview Loan Servicing (Conforming)"},
@@ -15,11 +16,6 @@ ALL_GUIDELINES = [
     {"category": "Conforming", "toggle_name": "FHLB"},
     {"category": "Conforming", "toggle_name": "Freddie"},
     {"category": "Conforming", "toggle_name": "Freedom Mortgage (Conforming)"},
-    {"category": "Conforming", "toggle_name": "FSB_Conforming_AmeriHome_Overlays"},
-    {"category": "Conforming", "toggle_name": "FSB_Conforming_Bayview_Overlays"},
-    {"category": "Conforming", "toggle_name": "FSB_Conforming_FreedomMortgage_Overlays"},
-    {"category": "Conforming", "toggle_name": "FSB_Conforming_JPMorganChase_Overlays"},
-    {"category": "Conforming", "toggle_name": "FSB_Conforming_MrCooper_Overlays"},
     {"category": "Conforming", "toggle_name": "JP Morgan Chase"},
     {"category": "Conforming", "toggle_name": "Maxex (Conforming)"},
     {"category": "Conforming", "toggle_name": "Mr Cooper (Conforming)"},
@@ -37,9 +33,6 @@ ALL_GUIDELINES = [
     {"category": "Government", "toggle_name": "Chase (Government)"},
     {"category": "Government", "toggle_name": "FHA"},
     {"category": "Government", "toggle_name": "Freedom Mortgage (Government)"},
-    {"category": "Government", "toggle_name": "FSB_Govt_AmeriHome_Overlays"},
-    {"category": "Government", "toggle_name": "FSB_Govt_Freedom_Overlays"},
-    {"category": "Government", "toggle_name": "FSB_Govt_Truist_Overlays"},
     {"category": "Government", "toggle_name": "Mr Cooper (Government)"},
     {"category": "Government", "toggle_name": "NewRez (Government)"},
     {"category": "Government", "toggle_name": "NexBank (Government)"},
@@ -52,9 +45,31 @@ ALL_GUIDELINES = [
     {"category": "Government", "toggle_name": "Village Capital"},
 
 
+    # Jumbo CATEGORY
+    {"category": "Jumbo", "toggle_name": "AFCU Broker"},
+    {"category": "Jumbo", "toggle_name": "Ameri Home (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Bayview (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Chase (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Dollar Bank (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Maxex (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "NewRez (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "NewRez (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Plaza Home (Jumbo)"},
+    {"category": "Jumbo", "toggle_name": "Truist (Jumbo)"},
 
+    #Non-QM CATEGORY
+    {"category": "Non-QM", "toggle_name": "Ameri Home (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "Bayview (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "Chase (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "Maxex (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "Mr Cooper (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "NewRez (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "NexBank (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "PHH (Non-QM)"},
+    {"category": "Non-QM", "toggle_name": "Plaza Home (Non-QM)"},
 
-
+   # Portfolio CATEGORY
+   {"category": "Portfolio", "toggle_name": "Portfolio"},
 ]
 
 class TestChatbotFSB:
@@ -81,10 +96,9 @@ class TestChatbotFSB:
         category_actions = {
             "Conforming": fsb_beta_page.click_confirmation_guideline_selection,
             "Government": fsb_beta_page.click_government_guideline_selection,
-            "Jumbo & Non-Conforming": fsb_beta_page.click_jubmo_now_confirming_guideline_selection,
+            "Jumbo": fsb_beta_page.click_jumbo_guideline_selection,
             "Non-QM": fsb_beta_page.click_non_qm_guideline_selection,
             "Portfolio": fsb_beta_page.click_portfolio_guideline_selection,
-            "HELOC": fsb_beta_page.click_heloc_guideline_selection,
         }
 
         # Dynamically fetch and execute the corresponding action

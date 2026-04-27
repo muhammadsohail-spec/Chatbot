@@ -8,15 +8,17 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 
-class ChatbotEvergreenBetaPage():
+class ChatbotEvergreenBetaPage(BasePage):
 
-    GUIDELINE_SELECTION_CONFIRMATION=(By.XPATH,"(//button[@type='button'])[4]")
-    GUIDELINE_SELECTION_GOVERNMENT = (By.XPATH, "(//button[@type='button'])[12]")
-    GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING = (By.XPATH, "(//button[@type='button'])[19]")
-    GUIDELINE_SELECTION_NON_QM = (By.XPATH, "(//button[@type='button'])[31]")
-    GUIDELINE_SELECTION_CONSTRUCTION = (By.XPATH, "(//button[@type='button'])[35]")
-    GUIDELINE_SELECTION_PORTFOLIO = (By.XPATH, "(//button[@type='button'])[42]")
-    GUIDELINE_SELECTION_HELOC = (By.XPATH, "(//button[@type='button'])[44]")
+    GUIDELINE_SELECTION_CONFIRMATION=(By.XPATH,"//h3[normalize-space()='Conforming']")
+    GUIDELINE_SELECTION_GOVERNMENT = (By.XPATH, "//h3[normalize-space()='Government']")
+    GUIDELINE_SELECTION_JUMBO = (By.XPATH,"//h3[normalize-space()='Jumbo']")
+
+    GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING = (By.XPATH, "//h3[normalize-space()='Jumbo & Non-Conforming']")
+    GUIDELINE_SELECTION_NON_QM = (By.XPATH, "//h3[normalize-space()='Non-QM']")
+    GUIDELINE_SELECTION_CONSTRUCTION = (By.XPATH, "//h3[normalize-space()='Construction']")
+    GUIDELINE_SELECTION_PORTFOLIO = (By.XPATH, "//h3[normalize-space()='Portfolio']")
+    GUIDELINE_SELECTION_HELOC = (By.XPATH, "//h3[normalize-space()='HELOC']")
 
     # Confirming Chatbot locaters
     # Note: Hardcoded locators have been removed in favor of dynamic generation using parameterized f-strings.
@@ -24,6 +26,9 @@ class ChatbotEvergreenBetaPage():
 
     # Change icon Locaters
     CHANGE=(By.XPATH,"//span[normalize-space()='Change']")
+
+    SUBMIT_BUTTON = (By.XPATH, "//button[@type='submit']")
+
 
 
     # CROSS_BTN = (By.XPATH,"")
@@ -47,10 +52,24 @@ class ChatbotEvergreenBetaPage():
         except (TimeoutException, NoSuchElementException) as e:
             print(f"button not clickable: {e}")
 
-    def click_jubmo_now_confirming_guideline_selection(self):
+    def click_jumbo_now_confirming_guideline_selection(self):
         try:
             self.wait_for_visibility(self.GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING)
             self.click(self.GUIDELINE_SELECTION_JUMBO_NON_CONFIRMING)
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"button not clickable: {e}")
+
+    def click_jumbo_guideline_selection(self):
+        try:
+            self.wait_for_visibility(self.GUIDELINE_SELECTION_JUMBO)
+            self.click(self.GUIDELINE_SELECTION_JUMBO)
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"button not clickable: {e}")
+
+    def click_submit_btn(self):
+        try:
+            self.wait_for_visibility(self.SUBMIT_BUTTON)
+            self.click(self.SUBMIT_BUTTON)
         except (TimeoutException, NoSuchElementException) as e:
             print(f"button not clickable: {e}")
 
@@ -122,7 +141,7 @@ class ChatbotEvergreenBetaPage():
             print(f"[ERROR] Cannot get messages: {e}")
             return ""
 
-    def wait_for_response(self, timeout=20):
+    def wait_for_response(self, timeout=40):
         """Wait for a new message to appear and finish streaming"""
         old_len = len(self.driver.find_elements(*self.chat_message))
         for _ in range(10):  # Give it 10 seconds to start replying

@@ -10,9 +10,6 @@ from config.config import INPUT_DATA_GUIDELINE_MESSAFGE
 ALL_GUIDELINES = [
     # CONFORMING CATEGORY
     {"category": "Conforming", "toggle_name": "Chase Community Lending"},
-    {"category": "Conforming", "toggle_name": "Conforming Overlays"},
-    {"category": "Conforming", "toggle_name": "Conforming PnP"},
-    {"category": "Conforming", "toggle_name": "Conforming US Bank Overlays"},
     {"category": "Conforming", "toggle_name": "Fannie Mae (Conforming)"},
     {"category": "Conforming", "toggle_name": "Freddie Mac (Conforming)"},
     {"category": "Conforming", "toggle_name": "US Bank (Conforming)"},
@@ -20,7 +17,6 @@ ALL_GUIDELINES = [
     # GOVERNMENT CATEGORY
     {"category": "Government", "toggle_name": "FHA Chenoa"},
     {"category": "Government", "toggle_name": "FHA (Government)"},
-    {"category": "Government", "toggle_name": "Govt Overlays"},
     {"category": "Government", "toggle_name": "Section 184"},
     {"category": "Government", "toggle_name": "USDA (Government)"},
     {"category": "Government", "toggle_name": "VA"},
@@ -30,7 +26,6 @@ ALL_GUIDELINES = [
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Campeer"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Chase"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Citi"},
-    {"category": "Jumbo & Non-Conforming", "toggle_name": "Jumbo Non Conforming PnP"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Luxury Mortgage"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "MaxEx"},
     {"category": "Jumbo & Non-Conforming", "toggle_name": "Radian"},
@@ -58,7 +53,6 @@ ALL_GUIDELINES = [
     # HELOC
     {"category": "HELOC", "toggle_name": "Figure Lending"},
     {"category": "HELOC", "toggle_name": "GBC"},
-    {"category": "HELOC", "toggle_name": "Heloc GBC Overlays"},
     {"category": "HELOC", "toggle_name": "US Bank (HELOC)"},
 
 ]
@@ -92,7 +86,7 @@ class TestChatbotEvergreen:
         category_actions = {
             "Conforming": evergreen_beta_page.click_confirmation_guideline_selection,
             "Government": evergreen_beta_page.click_government_guideline_selection,
-            "Jumbo & Non-Conforming": evergreen_beta_page.click_jubmo_now_confirming_guideline_selection,
+            "Jumbo & Non-Conforming": evergreen_beta_page.click_jumbo_now_confirming_guideline_selection,
             "Non-QM": evergreen_beta_page.click_non_qm_guideline_selection,
             "Construction": evergreen_beta_page.click_construction_guideline_selection,
             "Portfolio": evergreen_beta_page.click_portfolio_guideline_selection,

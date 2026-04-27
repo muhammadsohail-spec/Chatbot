@@ -51,3 +51,24 @@ def extract_link(text):
     url_pattern = r'(https?://[^\s]+)'
     match = re.search(url_pattern, text)
     return match.group(0) if match else None
+
+
+import os
+import allure
+from datetime import datetime
+
+def take_screenshot(driver, name="failed_testcases_screenshoot"):
+    if not os.path.exists("failed_testcases_screenshoot"):
+        os.makedirs("failed_testcases_screenshoot")
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = f"failed_testcases_screenshoot/{name}_{timestamp}.png"
+
+    driver.save_screenshot(file_path)
+
+    # Attach to Allure report
+    allure.attach.file(
+        file_path,
+        name=name,
+        attachment_type=allure.attachment_type.PNG
+    )

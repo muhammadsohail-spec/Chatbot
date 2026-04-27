@@ -102,3 +102,19 @@ def loginfsbbeta(driver):
     login_page.wait_for_url_contains("chat")
     # assert "chat" in driver.current_url
     assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+
+
+import pytest
+from utils.helpers import take_screenshot
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    # Check if test failed
+    if report.when == "call" and report.failed:
+        driver = item.funcargs.get("driver")
+
+        if driver:
+            take_screenshot(driver, name=item.name)

@@ -19,6 +19,7 @@ class ChatbotEvergreenBetaPage(BasePage):
     GUIDELINE_SELECTION_CONSTRUCTION = (By.XPATH, "//h3[normalize-space()='Construction']")
     GUIDELINE_SELECTION_PORTFOLIO = (By.XPATH, "//h3[normalize-space()='Portfolio']")
     GUIDELINE_SELECTION_HELOC = (By.XPATH, "//h3[normalize-space()='HELOC']")
+    GUIDELINE_SELECTION_DPA = (By.XPATH, "//h3[normalize-space()='DPA']")
 
     # Confirming Chatbot locaters
     # Note: Hardcoded locators have been removed in favor of dynamic generation using parameterized f-strings.
@@ -42,6 +43,13 @@ class ChatbotEvergreenBetaPage(BasePage):
         try:
             self.wait_for_visibility(self.GUIDELINE_SELECTION_CONFIRMATION)
             self.click(self.GUIDELINE_SELECTION_CONFIRMATION)
+        except (TimeoutException, NoSuchElementException) as e:
+            print(f"button not clickable: {e}")
+
+    def click_dpa_guideline_selection(self):
+        try:
+            self.wait_for_visibility(self.GUIDELINE_SELECTION_DPA)
+            self.click(self.GUIDELINE_SELECTION_DPA)
         except (TimeoutException, NoSuchElementException) as e:
             print(f"button not clickable: {e}")
 

@@ -3,10 +3,14 @@
 URL = "https://evergreenbeta.guidelinebuddy.com/auth/login"
 URLBeta = "https://beta.guidelinebuddy.com/chat"
 URLFSB = "https://fsbbeta.guidelinebuddy.com/auth/login"
-
+URLDSLD = "https://dsldbeta.guidelinebuddy.com/auth/login"
 # FSB credentials
 USERNAME_FSB = "testsadaf2+fsbbeta@gmail.com"
 PASSWORD_FSB = "DefaultPassword123&"
+
+
+USERNAME_DSLD = "testsadaf2+dsldbeta@gmail.com"
+PASSWORD_DSLD = "testsadaf2+dsldbeta@gmail.com"
 
 # Primary test credentials
 USERNAME = "testsadaf2+testing1@gmail.com"

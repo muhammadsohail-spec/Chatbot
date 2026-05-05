@@ -64,6 +64,7 @@ class TestChatbot:
 
         response = self.chatbot_page.wait_for_response()
         logger.info(f"Response for {toggle_label}: {response}")
+        print("This is Response in Chatbot==" + response)
 
         # --- Handle alerts and system errors gracefully ---
         # if response and "ALERT_FOUND:" in response:

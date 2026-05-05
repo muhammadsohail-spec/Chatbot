@@ -5,7 +5,7 @@ import pytest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
-from config.config import URL, USERNAME, PASSWORD, NEW_PASSWORD, URLBeta, URLFSB, USERNAME_FSB, PASSWORD_FSB
+from config.config import URL, USERNAME, PASSWORD, NEW_PASSWORD, URLBeta, URLFSB, USERNAME_FSB, PASSWORD_FSB, PASSWORD_DSLD ,URLDSLD, USERNAME_DSLD
 
 from pages.login_page import LoginPage
 
@@ -98,6 +98,19 @@ def loginfsbbeta(driver):
     # Enter login detail
     login_page.enter_email(USERNAME_FSB)
     login_page.enter_password(PASSWORD_FSB)
+    login_page.click_login()
+    login_page.wait_for_url_contains("chat")
+    # assert "chat" in driver.current_url
+    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
+
+
+@pytest.fixture(scope="class")
+def logindsldbeta(driver):
+    driver.get(URLDSLD)
+    login_page = LoginPage(driver)
+    # Enter login detail
+    login_page.enter_email(USERNAME_DSLD)
+    login_page.enter_password(PASSWORD_DSLD)
     login_page.click_login()
     login_page.wait_for_url_contains("chat")
     # assert "chat" in driver.current_url

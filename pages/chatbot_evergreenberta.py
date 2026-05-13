@@ -149,7 +149,7 @@ class ChatbotEvergreenBetaPage(BasePage):
             print(f"[ERROR] Cannot get messages: {e}")
             return ""
 
-    def wait_for_response(self, timeout=40):
+    def wait_for_response(self, timeout=80):
         """Wait for a new message to appear and finish streaming"""
         old_len = len(self.driver.find_elements(*self.chat_message))
         for _ in range(10):  # Give it 10 seconds to start replying

@@ -1,0 +1,1 @@
+[32mINFO    [0m Conftest:conftest.py:100 Chrome WebDriver closed.

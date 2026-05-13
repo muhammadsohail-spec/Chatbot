@@ -1,6 +1,7 @@
 import allure
 import pytest
 from pages.chatbot_evergreenberta import ChatbotEvergreenBetaPage
+from utils.helpers import generate_dynamic_chat_message
 from config.config import INPUT_DATA_GUIDELINE_MESSAFGE
 
 
@@ -47,7 +48,7 @@ class TestChatbotDSLDBETA:
     @allure.feature("Login Feature")
     @allure.story("Valid Login Test")
     @allure.severity(allure.severity_level.CRITICAL)
-    def test_response_with_chatbot_dsld(self, guideline):
+    def test_dsldbeta_bots_response(self, guideline):
         ChatbotdsldBetaPage = ChatbotEvergreenBetaPage(self.driver)
 
         category = guideline["category"]
@@ -78,7 +79,7 @@ class TestChatbotDSLDBETA:
         ChatbotdsldBetaPage.click_chatbot_toggle(toggle_label)
 
         # 4. Message the bot
-        ChatbotdsldBetaPage.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
+        ChatbotdsldBetaPage.enter_guideline_message(generate_dynamic_chat_message())
         ChatbotdsldBetaPage.click_submit_btn()
 
         # 5. Get the user payload verification

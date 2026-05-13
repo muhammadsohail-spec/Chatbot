@@ -119,7 +119,7 @@ class ChatpotPage(BasePage):
         except:
             return ""
 
-    def wait_for_response(self, timeout=20):
+    def wait_for_response(self, timeout=10):
         """Wait for a new message to appear and finish streaming"""
         old_len = len(self.driver.find_elements(*self.LATEST_RESPONSE))
 

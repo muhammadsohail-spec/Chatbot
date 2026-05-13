@@ -2,6 +2,8 @@ import pytest
 from pages.chatbot import ChatpotPage
 from config.config import INPUT_DATA_GUIDELINE_MESSAFGE, URLBeta
 from utils.logger import get_logger
+from utils.helpers import generate_dynamic_chat_message
+
 # //section[@aria-label='Notifications alt+T']
 
 logger = get_logger("TestChatbot")
@@ -13,13 +15,14 @@ logger = get_logger("TestChatbot")
 ALL_GUIDELINES = [
     # CONFORMING CATEGORY
     {"category": "Select Lender Partner", "toggle_name": "(Select All)"},
+    {"category": "Select Lender Partner", "toggle_name": "ACC Mortgage"},
+    {"category": "Select Lender Partner", "toggle_name": "Champions"},
+    {"category": "Select Lender Partner", "toggle_name": "eResi Test"},
+    {"category": "Select Lender Partner", "toggle_name": "Logan Finance"},
+    {"category": "Select Lender Partner", "toggle_name": "NewFi"},
     {"category": "Select Lender Partner", "toggle_name": "Reverse Mortgages (HECMs)"},
     {"category": "Select Lender Partner", "toggle_name": "Snmc test bots"},
-    {"category": "Select Lender Partner", "toggle_name": "test"},
-    {"category": "Select Lender Partner", "toggle_name": "test bot"},
-    {"category": "Select Lender Partner", "toggle_name": "Test Scratch Bot 2"},
-    {"category": "Select Lender Partner", "toggle_name": "Truist"},
-    {"category": "Select Lender Partner", "toggle_name": "xyz"},
+    {"category": "Select Lender Partner", "toggle_name": "WMD"},
 
 
 ]
@@ -37,7 +40,7 @@ class TestChatbot:
     ids=lambda g: f"{g['category']}::{g['toggle_name']}")
 
 
-    def test_all_guideline_chatbots(self, guideline):
+    def test_beta_bots_response(self, guideline):
         category = guideline["category"]
         toggle_label = guideline["toggle_name"]
 
@@ -59,7 +62,7 @@ class TestChatbot:
             self.chatbot_page.click_guideline()
             self.chatbot_page.select_guidelines_all()
 
-        self.chatbot_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
+        self.chatbot_page.enter_guideline_message(generate_dynamic_chat_message())
         self.chatbot_page.click_submit_btn()
 
         response = self.chatbot_page.wait_for_response()

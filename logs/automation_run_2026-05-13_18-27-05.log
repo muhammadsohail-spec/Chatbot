@@ -1,0 +1,52 @@
+2026-05-13 18:27:07 [INFO    ] Conftest: Chrome WebDriver started (headless=False).
+2026-05-13 18:27:17 [INFO    ] Conftest: Login fixture: authenticated at https://beta.guidelinebuddy.com/chat
+2026-05-13 18:29:49 [INFO    ] Conftest: Failure screenshot saved: failed_testcases_screenshoot/test_all_guideline_chatbots[Select Lender Partner::Reverse Mortgages (HECMs)].png
+2026-05-13 18:29:52 [INFO    ] Conftest: Failure screenshot saved: failed_testcases_screenshoot/test_all_guideline_chatbots[Select Lender Partner::Snmc test bots].png
+2026-05-13 18:30:12 [INFO    ] Conftest: Chrome WebDriver closed.
+2026-05-13 18:30:14 [INFO    ] Conftest: Chrome WebDriver started (headless=False).
+2026-05-13 18:30:21 [INFO    ] Conftest: Login fixture: authenticated at https://dsldbeta.guidelinebuddy.com/chat
+2026-05-13 18:37:29 [INFO    ] Conftest: Chrome WebDriver closed.
+2026-05-13 18:37:32 [INFO    ] Conftest: Chrome WebDriver started (headless=False).
+2026-05-13 18:37:41 [INFO    ] Conftest: Login fixture: authenticated at https://evergreenbeta.guidelinebuddy.com/chat
+2026-05-13 19:09:03 [WARNING ] Conftest: Could not save failure screenshot locally: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010e6cc988 chromedriver + 6842760
+1   chromedriver                        0x000000010e6c3ffa chromedriver + 6807546
+2   chromedriver                        0x000000010e0b48d0 chromedriver + 452816
+3   chromedriver                        0x000000010e0fb094 chromedriver + 741524
+4   chromedriver                        0x000000010e12ea66 chromedriver + 952934
+5   chromedriver                        0x000000010e128d71 chromedriver + 929137
+6   chromedriver                        0x000000010e128577 chromedriver + 927095
+7   chromedriver                        0x000000010e07af4f chromedriver + 216911
+8   chromedriver                        0x000000010e6846a7 chromedriver + 6547111
+9   chromedriver                        0x000000010e688a94 chromedriver + 6564500
+10  chromedriver                        0x000000010e66445a chromedriver + 6415450
+11  chromedriver                        0x000000010e689518 chromedriver + 6567192
+12  chromedriver                        0x000000010e653830 chromedriver + 6346800
+13  chromedriver                        0x000000010e078bd3 chromedriver + 207827
+14  dyld                                0x00007ff80de18418 start + 1896
+
+2026-05-13 19:09:03 [WARNING ] Conftest: Could not attach screenshot to Allure: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+0   chromedriver                        0x000000010e6cc988 chromedriver + 6842760
+1   chromedriver                        0x000000010e6c3ffa chromedriver + 6807546
+2   chromedriver                        0x000000010e0b48d0 chromedriver + 452816
+3   chromedriver                        0x000000010e0fb094 chromedriver + 741524
+4   chromedriver                        0x000000010e12ea66 chromedriver + 952934
+5   chromedriver                        0x000000010e128d71 chromedriver + 929137
+6   chromedriver                        0x000000010e128577 chromedriver + 927095
+7   chromedriver                        0x000000010e07af4f chromedriver + 216911
+8   chromedriver                        0x000000010e6846a7 chromedriver + 6547111
+9   chromedriver                        0x000000010e688a94 chromedriver + 6564500
+10  chromedriver                        0x000000010e66445a chromedriver + 6415450
+11  chromedriver                        0x000000010e689518 chromedriver + 6567192
+12  chromedriver                        0x000000010e653830 chromedriver + 6346800
+13  chromedriver                        0x000000010e078bd3 chromedriver + 207827
+14  dyld                                0x00007ff80de18418 start + 1896
+
+2026-05-13 19:09:03 [INFO    ] Conftest: Chrome WebDriver closed.
+2026-05-13 19:09:06 [INFO    ] Conftest: Chrome WebDriver started (headless=False).
+2026-05-13 19:09:14 [INFO    ] Conftest: Login fixture: authenticated at https://fsbbeta.guidelinebuddy.com/chat
+2026-05-13 19:22:08 [INFO    ] Conftest: Failure screenshot saved: failed_testcases_screenshoot/test_response_with_chatbot[Conforming::Mr Cooper (Conforming)].png
+2026-05-13 19:24:58 [INFO    ] Conftest: Failure screenshot saved: failed_testcases_screenshoot/test_response_with_chatbot[Conforming::Truist (Conforming)].png
+2026-05-13 19:32:55 [INFO    ] Conftest: Failure screenshot saved: failed_testcases_screenshoot/test_response_with_chatbot[Jumbo::Chase (Jumbo)].png

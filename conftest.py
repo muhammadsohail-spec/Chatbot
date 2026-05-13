@@ -1,133 +1,204 @@
-import random
+"""
+conftest.py
+===========
+Pytest configuration and shared fixtures for the entire test suite.
+
+Fixtures:
+    driver           – class-scoped Chrome WebDriver instance.
+    loginbeta        – pre-authenticated session against URLBeta.
+    loginevergreenbeta – pre-authenticated session against URL (Evergreen Beta).
+    loginfsbbeta     – pre-authenticated session against URLFSB.
+    logindsldbeta    – pre-authenticated session against URLDSLD.
+
+Hooks:
+    pytest_addoption         – Adds ``--headless`` CLI flag.
+    pytest_runtest_makereport – On failure: saves screenshot locally
+                                and attaches it to the Allure report.
+"""
+
 from pathlib import Path
 
 import pytest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
-from config.config import URL, USERNAME, PASSWORD, NEW_PASSWORD, URLBeta, URLFSB, USERNAME_FSB, PASSWORD_FSB, PASSWORD_DSLD ,URLDSLD, USERNAME_DSLD
 
+from config.config import (
+    URL,
+    USERNAME,
+    PASSWORD,
+    URLBeta,
+    URLFSB,
+    USERNAME_FSB,
+    PASSWORD_FSB,
+    URLDSLD,
+    USERNAME_DSLD,
+    PASSWORD_DSLD,
+)
 from pages.login_page import LoginPage
+from utils.helpers import take_screenshot
+from utils.logger import get_logger
+
+logger = get_logger("Conftest")
+
+# Directory where failure screenshots are persisted locally.
+SCREENSHOT_DIR = Path("failed_testcases_screenshoot")
 
 
-def pytest_addoption(parser):
+# ---------------------------------------------------------------------------
+# CLI options
+# ---------------------------------------------------------------------------
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the ``--headless`` command-line flag."""
     parser.addoption(
         "--headless",
         action="store_true",
         default=False,
-        help="Run browser in headless mode",
+        help="Run the browser in headless mode (useful for CI/CD environments).",
     )
 
 
+# ---------------------------------------------------------------------------
+# WebDriver fixture
+# ---------------------------------------------------------------------------
+
 @pytest.fixture(scope="class")
-def driver(request):
-    chrome_options = Options()
+def driver(request: pytest.FixtureRequest):
+    """
+    Provide a class-scoped Chrome WebDriver instance.
 
-    # Default to headless in CI/sandboxed environments unless overridden.
-    run_headless = request.config.getoption("--headless")
+    The browser is launched once per test class, shared across all tests
+    in that class, and closed after the last test completes.
+
+    CLI flags:
+        --headless  Run Chrome without a visible window.
+
+    Yields:
+        selenium.webdriver.Chrome: Active browser session.
+    """
+    options = Options()
+    run_headless: bool = request.config.getoption("--headless")
+
     if run_headless:
-        chrome_options.add_argument("--headless")
+        options.add_argument("--headless=new")  # modern headless flag
 
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--remote-debugging-port=9222")
 
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Chrome(options=options)
     if not run_headless:
         browser.maximize_window()
 
+    logger.info("Chrome WebDriver started (headless=%s).", run_headless)
     yield browser
 
     browser.quit()
+    logger.info("Chrome WebDriver closed.")
 
 
-def generate_username(base="User"):
-    """Generate a unique username."""
-    return f"{base}_{random.randint(1000, 9999)}"
+# ---------------------------------------------------------------------------
+# Login helper — shared by all environment fixtures
+# ---------------------------------------------------------------------------
 
+def _login(driver, url: str, username: str, password: str, use_otp: bool = False, otp: str = "") -> None:
+    """
+    Navigate to ``url``, log in with the supplied credentials, and assert
+    that the browser lands on the chat page.
+
+    Args:
+        driver:   Active Selenium WebDriver.
+        url:      Full URL to navigate to before logging in.
+        username: Email / username to enter.
+        password: Password to enter.
+        use_otp:  Whether to complete OTP verification after login.
+        otp:      OTP string to submit (required when ``use_otp=True``).
+
+    Raises:
+        AssertionError: If the browser is not on the chat page after login.
+    """
+    driver.get(url)
+    login_page = LoginPage(driver)
+    login_page.enter_email(username)
+    login_page.enter_password(password)
+    login_page.click_login()
+
+    if use_otp:
+        login_page.enter_otp(otp)
+
+    login_page.wait_for_url_contains("chat")
+    assert "chat" in driver.current_url, (
+        f"Login fixture failed — expected 'chat' in URL, got: {driver.current_url}"
+    )
+    logger.info("Login fixture: authenticated at %s", driver.current_url)
+
+
+# ---------------------------------------------------------------------------
+# Environment-specific login fixtures
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="class")
+def loginbeta(driver) -> None:
+    """Pre-authenticate against the Beta environment (URLBeta)."""
+    _login(driver, URLBeta, USERNAME, PASSWORD, use_otp=True, otp="712312")
+
+
+@pytest.fixture(scope="class")
+def loginevergreenbeta(driver) -> None:
+    """Pre-authenticate against the Evergreen Beta environment (URL)."""
+    _login(driver, URL, USERNAME, PASSWORD, use_otp=True, otp="712312")
+
+
+@pytest.fixture(scope="class")
+def loginfsbbeta(driver) -> None:
+    """Pre-authenticate against the FSB Beta environment (URLFSB)."""
+    _login(driver, URLFSB, USERNAME_FSB, PASSWORD_FSB)
+
+
+@pytest.fixture(scope="class")
+def logindsldbeta(driver) -> None:
+    """Pre-authenticate against the DSLD Beta environment (URLDSLD)."""
+    _login(driver, URLDSLD, USERNAME_DSLD, PASSWORD_DSLD)
+
+
+# ---------------------------------------------------------------------------
+# Failure screenshot hook
+# ---------------------------------------------------------------------------
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    rep = outcome.get_result()
-    if rep.failed and "driver" in item.funcargs:
-        screenshot_dir = Path("failed_testcases_screenshoot")
-        screenshot_dir.mkdir(parents=True, exist_ok=True)
-        try:
-            item.funcargs["driver"].save_screenshot(str(screenshot_dir / f"{item.name}.png"))
-        except WebDriverException:
-            # If the browser crashed or session already closed, avoid failing pytest internals.
-            pass
+def pytest_runtest_makereport(item: pytest.Item, call) -> None:
+    """
+    After each test call phase, if the test **failed**:
+        1. Save a PNG screenshot to the local ``failed_testcases_screenshoot/`` folder.
+        2. Attach the screenshot to the Allure report.
 
-
-@pytest.fixture(scope="class")
-def loginbeta(driver):
-    driver.get(URLBeta)
-    login_page = LoginPage(driver)
-    # Enter login detail
-    login_page.enter_email(USERNAME)
-    login_page.enter_password(PASSWORD)
-    login_page.click_login()
-    login_page.enter_otp("712312")
-    login_page.wait_for_url_contains("chat")
-    # assert "chat" in driver.current_url
-    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
-    # replace credentials
-
-
-@pytest.fixture(scope="class")
-def loginevergreenbeta(driver):
-    driver.get(URL)
-    login_page = LoginPage(driver)
-    # Enter login detail
-    login_page.enter_email(USERNAME)
-    login_page.enter_password(PASSWORD)
-    login_page.click_login()
-    login_page.enter_otp("712312")
-    login_page.wait_for_url_contains("chat")
-    # assert "chat" in driver.current_url
-    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
-
-
-@pytest.fixture(scope="class")
-def loginfsbbeta(driver):
-    driver.get(URLFSB)
-    login_page = LoginPage(driver)
-    # Enter login detail
-    login_page.enter_email(USERNAME_FSB)
-    login_page.enter_password(PASSWORD_FSB)
-    login_page.click_login()
-    login_page.wait_for_url_contains("chat")
-    # assert "chat" in driver.current_url
-    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
-
-
-@pytest.fixture(scope="class")
-def logindsldbeta(driver):
-    driver.get(URLDSLD)
-    login_page = LoginPage(driver)
-    # Enter login detail
-    login_page.enter_email(USERNAME_DSLD)
-    login_page.enter_password(PASSWORD_DSLD)
-    login_page.click_login()
-    login_page.wait_for_url_contains("chat")
-    # assert "chat" in driver.current_url
-    assert "chat" in driver.current_url, f"Expected 'chat1' in URL but got {driver.current_url}"
-
-
-import pytest
-from utils.helpers import take_screenshot
-
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+    Both steps are wrapped in individual try/except blocks so that a
+    screenshot failure does not mask the original test failure.
+    """
     outcome = yield
     report = outcome.get_result()
 
-    # Check if test failed
-    if report.when == "call" and report.failed:
-        driver = item.funcargs.get("driver")
+    if report.when != "call" or not report.failed:
+        return
 
-        if driver:
-            take_screenshot(driver, name=item.name)
+    active_driver = item.funcargs.get("driver")
+    if not active_driver:
+        return
+
+    # 1. Persist screenshot locally
+    SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    local_path = SCREENSHOT_DIR / f"{item.name}.png"
+    try:
+        active_driver.save_screenshot(str(local_path))
+        logger.info("Failure screenshot saved: %s", local_path)
+    except WebDriverException as exc:
+        logger.warning("Could not save failure screenshot locally: %s", exc)
+
+    # 2. Attach to Allure
+    try:
+        take_screenshot(active_driver, name=item.name)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Could not attach screenshot to Allure: %s", exc)

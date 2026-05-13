@@ -2,6 +2,8 @@ import time
 import pytest
 from pages.chatbot_evergreenberta import ChatbotEvergreenBetaPage
 from config.config import INPUT_DATA_GUIDELINE_MESSAFGE
+from utils.helpers import generate_dynamic_chat_message
+from utils.helpers import generate_dynamic_chat_message
 
 # ---------------------------------------------------------
 # TEST DATA (SENIOR AUTOMATION BEST PRACTICE)
@@ -70,7 +72,7 @@ class TestChatbotEvergreen:
         ALL_GUIDELINES,
         ids=lambda g: f"{g['category']}::{g['toggle_name']}"
     )
-    def test_response_with_chatbot(self, guideline):
+    def test_evergreen_bots_response(self, guideline):
         evergreen_beta_page = ChatbotEvergreenBetaPage(self.driver)
 
         category = guideline["category"]
@@ -106,11 +108,12 @@ class TestChatbotEvergreen:
         evergreen_beta_page.click_chatbot_toggle(toggle_label)
 
         # 4. Message the bot
-        evergreen_beta_page.enter_guideline_message(INPUT_DATA_GUIDELINE_MESSAFGE)
+        evergreen_beta_page.enter_guideline_message(generate_dynamic_chat_message())
         evergreen_beta_page.click_submit_btn()
 
         # 5. Get the user payload verification
         response = evergreen_beta_page.wait_for_response()
+        print("Chatbot Response:: ", response)
         assert response, "❌ Empty user message logged in chat window"
 
         forbidden_keywords = ["Unauthorized", "Invalid","error creating session","Invalid API key. Please provide a valid API key and try again."]

@@ -1,0 +1,2 @@
+[32mINFO    [0m Conftest:conftest.py:96 Chrome WebDriver started (headless=False).
+[32mINFO    [0m Conftest:conftest.py:136 Login fixture: authenticated at https://beta.guidelinebuddy.com/chat

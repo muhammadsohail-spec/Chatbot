@@ -85,7 +85,7 @@ class TestChatbotFSB:
         ALL_GUIDELINES,
         ids=lambda g: f"{g['category']}::{g['toggle_name']}"
     )
-    def test_response_with_chatbot(self,guideline):
+    def test_fsbbeta_bots_response(self,guideline):
         fsb_beta_page = ChatbotFsbBetaPage(self.driver)
         category = guideline["category"]
         toggle_label = guideline["toggle_name"]
@@ -120,7 +120,7 @@ class TestChatbotFSB:
         # 5. Get the user payload verification
         response = fsb_beta_page.wait_for_response()
 
-        print("This is Response in Chatbot=="+response)
+        print("This is the Chatbot Response =="+response)
         assert response, "❌ Empty user message logged in chat window"
 
 
